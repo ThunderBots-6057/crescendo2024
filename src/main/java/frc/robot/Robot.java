@@ -221,11 +221,7 @@ public class Robot extends TimedRobot {
 
       //System.out.println(shootTime);
 
-<<<<<<< HEAD
       // if shoot  Time ( shooting timer ) is counting up
-=======
-      // if shootTime ( shooting timer ) is counting up
->>>>>>> 84d0433686b5c895a7d90232421c675f16ff3fd1
       if (shootTime > 0) {
         m_shooter_wheel.set(1.0);
         System.out.println("Shoot");
