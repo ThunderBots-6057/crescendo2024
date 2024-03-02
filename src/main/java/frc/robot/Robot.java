@@ -182,13 +182,10 @@ public class Robot extends TimedRobot {
 
       // turning on the shooter wheel then shooter feed and shooter load in correct order at the correct time then turning it off
 
-<<<<<<< HEAD
 
       // Make driver controller operate tank drive
       m_robotDrive.tankDrive(-m_driver.getRawAxis(1),-m_driver.getRawAxis(5));
 
-=======
->>>>>>> 84d0433686b5c895a7d90232421c675f16ff3fd1
     // Set button 1 to extend on both climbers at the right multiplier
     
     // this is to move the intake up and down to load it into the launcher
