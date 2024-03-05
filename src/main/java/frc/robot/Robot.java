@@ -35,6 +35,11 @@ public class Robot extends TimedRobot {
   String runCode = "experimental";
 
 
+  // Smooth driving 0 = off 1 = on
+//  int smoothDriving = 0;
+  int smoothDriving = 1;
+
+
   // Constants to set timing for the shooting operation, load will position note at the feed wheel, feed will move the note to the
   // shooting wheel that will already be up to speed, reset will zero out the shoot timer and return to normal operation
   // the other operations will only happen until the free movement time is reached
@@ -180,71 +185,46 @@ public class Robot extends TimedRobot {
      // Start of experimental code
      // ----------------------------------------------------------------------------------------------------------------
 
-      // turning on the shooter wheel then shooter feed and shooter load in correct order at the correct time then turning it off
-
-
+      if (m_driver.getRawButtonReleased(6)){
+        if (smoothDriving == 0){
+          smoothDriving = 1;
+        } else {
+          smoothDriving = 0;
+        }
+      }
       // Make driver controller operate tank drive
-      m_robotDrive.tankDrive(-m_driver.getRawAxis(1),-m_driver.getRawAxis(5));
+      if (smoothDriving == 1) {
+        m_robotDrive.tankDrive(-Math.pow(m_driver.getRawAxis(1),3),-Math.pow(m_driver.getRawAxis(5),3));
+      } else {
+        m_robotDrive.tankDrive(-m_driver.getRawAxis(1),-m_driver.getRawAxis(5));
+      }
+      
 
     // Set button 1 to extend on both climbers at the right multiplier
+
+      // turning on the shooter wheel then shooter feed and shooter load in correct order at the correct time then turning it off
+
     
-    // this is to move the intake up and down to load it into the launcher
-      if (m_operator.getPOV() != -1){
-        if ((m_operator.getPOV(0) > 220) && (m_operator.getPOV(0) < 290)) {
-          m_intake_lift.set(1.0);
-        }
-        if ((m_operator.getPOV(0) > 220) && (m_operator.getPOV(0) < 290)) {
-          m_intake_lift.set(-1.0);
-        } 
-
-    } else {
-      m_intake_lift.set(0.0);
-    }
-
-      // this is to pick it up to the ground
-      if (m_operator.getRawButton(3)) {
-        m_floor_intake.set(1.0);
-      } else {
-        m_floor_intake.set(0.0);
-      }
-      if (m_operator.getRawButton(4)) {
-        m_floor_intake.set(-1.0);
-      } else {
-        m_floor_intake.set(0.0);
-      }
-
       // Start shooting timer
       if ((m_operator.getRawAxis(3) > 0) && (shootTime == 0L)) {
         shootTime=System.currentTimeMillis();
-        System.out.println("Set Timer");
       }
 
-      //System.out.println(shootTime);
 
       // if shoot  Time ( shooting timer ) is counting up
       if (shootTime > 0) {
         m_shooter_wheel.set(1.0);
-        System.out.println("Shoot");
 
         if ((shootTime + m_shooter_load_triggerTime) < System.currentTimeMillis()){
           m_shooter_load.set(1.0);
-          System.out.println("Load=On");
 
         }
         if ((shootTime + m_shooter_feed_triggerTime) < System.currentTimeMillis()){
           m_shooter_feed.set(1.0);
-          System.out.println("Feed=On");
         }
-        if ((shootTime + m_shooter_reset_triggerTime) < System.currentTimeMillis()){
-          //shootTime = 0L;
-          //System.out.println("Reset=On");
-        } else {
-
-         //m_shooter_wheel.set(0);
+        if ((shootTime + m_shooter_reset_triggerTime) >= System.currentTimeMillis()){
          m_shooter_feed.set(0.0);
          m_shooter_load.set(0.0);
-        // print error
-        // stub
         }
 
         if (shootTime + m_shooter_feemovement_triggerTime <= System.currentTimeMillis()){
@@ -255,33 +235,57 @@ public class Robot extends TimedRobot {
 
         }
 
-        // Set button 0 to retract on both climbers at the right multiplier
-        if (m_operator.getRawButton(2)) {
-          m_climber_left.set(1 * m_climber_left_multiplier);
-          m_climber_right.set(1 * m_climber_right_multiplier);
-        } else if (m_operator.getRawButton(1)){
-          m_climber_left.set(-1 * m_climber_left_multiplier);
-          m_climber_right.set(-1 * m_climber_right_multiplier);
-        } else {
-          m_climber_left.set(0);
-          m_climber_right.set(0);
-
-        }
-
 
 
       } else { // This is when shooting is not happening
-        //System.out.println("Stop Drives");
 
         m_shooter_wheel.set(0.0);
         m_shooter_load.set(0.0);
         m_shooter_feed.set(0.0);
 
         // Activate Left bumper control of the loader
-        //var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
-        //m_shooter_load.set(loader_speed);
+        var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
+        m_shooter_load.set(loader_speed);
 
       }
+
+
+      // Set button 0 to retract on both climbers at the right multiplier
+      if (m_operator.getRawButton(2)) {
+        m_climber_left.set(1 * m_climber_left_multiplier);
+        m_climber_right.set(1 * m_climber_right_multiplier);
+      } else if (m_operator.getRawButton(1)){
+        m_climber_left.set(-1 * m_climber_left_multiplier);
+        m_climber_right.set(-1 * m_climber_right_multiplier);
+      } else {
+        m_climber_left.set(0);
+        m_climber_right.set(0);
+
+      }
+
+    // this is to move the intake up and down to load it into the launcher
+      if ((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135)) {
+        m_intake_lift.set(1.0);
+      } else if ((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45)) {
+        m_intake_lift.set(-1.0);
+      } else {
+        m_intake_lift.set(0);
+      } 
+
+
+      // this is to pick it up from the ground
+      if (m_operator.getRawButton(3)) {
+        m_floor_intake.set(1.0);
+      } else {
+        m_floor_intake.set(0.0);
+      }
+      if (m_operator.getRawButton(4)) {
+        m_floor_intake.set(-1.0);
+      } else if (!m_operator.getRawButton(3)){
+        m_floor_intake.set(0.0);
+      }
+
+
       //starts the actual procces of shooting the note
       //if ((m_operator.getRawAxis(3) >= 0) && (shootTime + 1500 <= System.currentTimeMillis())) {
       //  m_shooter_load.set(1.0);
@@ -302,8 +306,6 @@ public class Robot extends TimedRobot {
     } else {
       System.out.println("runCode constant set to invalid value=" + runCode);
     }
-
-
 
   }
 }
