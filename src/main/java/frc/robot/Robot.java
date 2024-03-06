@@ -59,17 +59,17 @@ public class Robot extends TimedRobot {
   private final WPI_VictorSPX m_rightRearMotor = new WPI_VictorSPX(3);
 
   private final WPI_VictorSPX m_shooter_wheel = new WPI_VictorSPX(2);
-  private final WPI_VictorSPX m_shooter_feed = new WPI_VictorSPX(10);
+  private final WPI_VictorSPX m_shooter_feed = new WPI_VictorSPX(11);
   private final WPI_VictorSPX m_shooter_load = new WPI_VictorSPX(20);
 
   // Climber motors defined and driven separately but at the same time because the gearboxes
   // are built different so they go at different speeds for the same distance
-  private final WPI_VictorSPX m_climber_left = new WPI_VictorSPX(6);
-  private final WPI_VictorSPX m_climber_right = new WPI_VictorSPX(7);
+  private final WPI_VictorSPX m_climber_left = new WPI_VictorSPX(1);
+  private final WPI_VictorSPX m_climber_right = new WPI_VictorSPX(8);
 
   // the intake to pick up the note from the ground and feed to the launcher
-  private final WPI_VictorSPX m_floor_intake = new WPI_VictorSPX(60);
-  private final WPI_VictorSPX m_intake_lift = new WPI_VictorSPX(57);
+  private final WPI_VictorSPX m_floor_intake = new WPI_VictorSPX(10);
+  private final WPI_VictorSPX m_intake_lift = new WPI_VictorSPX(9);
 
   // private final WPI_VictorSPX m_intake_drive = new WPI_VictorSPX(9);
   // private final WPI_VictorSPX m_intake_fold = new WPI_VictorSPX(10);
@@ -265,9 +265,9 @@ public class Robot extends TimedRobot {
 
     // this is to move the intake up and down to load it into the launcher
       if ((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135)) {
-        m_intake_lift.set(1.0);
+        m_intake_lift.set(0.35);
       } else if ((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45)) {
-        m_intake_lift.set(-1.0);
+        m_intake_lift.set(-0.35);
       } else {
         m_intake_lift.set(0);
       } 
@@ -275,12 +275,12 @@ public class Robot extends TimedRobot {
 
       // this is to pick it up from the ground
       if (m_operator.getRawButton(3)) {
-        m_floor_intake.set(1.0);
+        m_floor_intake.set(1);
       } else {
         m_floor_intake.set(0.0);
       }
       if (m_operator.getRawButton(4)) {
-        m_floor_intake.set(-1.0);
+        m_floor_intake.set(-1);
       } else if (!m_operator.getRawButton(3)){
         m_floor_intake.set(0.0);
       }
