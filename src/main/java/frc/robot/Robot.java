@@ -276,13 +276,21 @@ public class Robot extends TimedRobot {
       // this is to pick it up from the ground
       if (m_operator.getRawButton(3)) {
         m_floor_intake.set(1);
+        m_shooter_load.set(1);
       } else {
         m_floor_intake.set(0.0);
+        if (shootTime == 0) {
+         m_shooter_load.set(0); 
+        }
       }
       if (m_operator.getRawButton(4)) {
         m_floor_intake.set(-1);
+        m_shooter_load.set(-1);
       } else if (!m_operator.getRawButton(3)){
         m_floor_intake.set(0.0);
+        if (shootTime == 0) {
+         m_shooter_load.set(0); 
+        }
       }
 
 
