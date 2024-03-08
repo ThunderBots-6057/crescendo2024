@@ -6,6 +6,7 @@
 package frc.robot;
 
 
+import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -15,7 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
-
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;;;;
 
@@ -79,7 +81,8 @@ public class Robot extends TimedRobot {
   // private final WPI_VictorSPX m_intake_drive = new WPI_VictorSPX(9);
   // private final WPI_VictorSPX m_intake_fold = new WPI_VictorSPX(10);
   // private final WPI_VictorSPX m_leftRearMotor = new WPI_VictorSPX(1); we dont know the number
-
+  UsbCamera camera1;
+  UsbCamera camera2;
  
   @Override
 
@@ -103,12 +106,29 @@ public class Robot extends TimedRobot {
     m_robotDrive = new DifferentialDrive(m_leftFrontMotor::set, m_rightFrontMotor::set);
     m_driver = new Joystick(0);
     m_operator = new Joystick(1);
-    CameraServer.startAutomaticCapture(0);
-    CameraServer.startAutomaticCapture(1);
-    CvSink cvSink = CameraServer.getVideo(0);
-    CvSink cvSink2 = CameraServer.getVideo(1);
-    CvSource CameraServer.cvSink.putVideo("Blur1", 640, 480);
-    CvSource CameraServer.cvSink2.putVideo("Blur1", 640, 480);
+
+    smoothDriving = 0;
+
+    // Fergie go here...
+    // Uncomment and change to 1 or -1 as needed
+//    m_robotDrive.tankDrive(1, 1);
+
+  
+
+    smoothDriving = 1;
+
+
+    camera1 = CameraServer.startAutomaticCapture(0);
+    camera2 = CameraServer.startAutomaticCapture(1);
+    camera1.setFPS(15);
+//    camera1.setVideoMode(PixelFormat.kMJPEG, 320, 240, 20);
+    camera2.setFPS(15);
+
+//    server = CameraServer.getServer();
+//    CvSink cvSink = CameraServer.getVideo(0);
+//    CvSink cvSink2 = CameraServer.getVideo(1);
+//    CvSource cvSink3.putVideo("Blur1", 640, 480);
+//    CvSource cvSink4.putVideo("Blur2", 640, 480);
 //    CvSource outputStreamb = CameraServer.putVideo("Blur2", 640, 480);
   }
    //overrides the main code for 2 seconds so you cant move for 2 seconds
