@@ -77,6 +77,8 @@ public class Robot extends TimedRobot {
   // the intake to pick up the note from the ground and feed to the launcher
   private final WPI_VictorSPX m_floor_intake = new WPI_VictorSPX(10);
   private final WPI_VictorSPX m_intake_lift = new WPI_VictorSPX(9);
+  // This timer is used for the drive straight auton.
+  final Timer autonTimer = new Timer();
 
   // private final WPI_VictorSPX m_intake_drive = new WPI_VictorSPX(9);
   // private final WPI_VictorSPX m_intake_fold = new WPI_VictorSPX(10);
@@ -109,15 +111,6 @@ public class Robot extends TimedRobot {
 
     smoothDriving = 0;
 
-    // Fergie go here...
-    // Uncomment and change to 1 or -1 as needed
-//    m_robotDrive.tankDrive(1, 1);
-
-  
-
-    smoothDriving = 1;
-
-
     camera1 = CameraServer.startAutomaticCapture(0);
     camera2 = CameraServer.startAutomaticCapture(1);
     camera1.setFPS(15);
@@ -130,10 +123,29 @@ public class Robot extends TimedRobot {
 //    CvSource cvSink3.putVideo("Blur1", 640, 480);
 //    CvSource cvSink4.putVideo("Blur2", 640, 480);
 //    CvSource outputStreamb = CameraServer.putVideo("Blur2", 640, 480);
+
+      SmartDashboard.putBoolean("Enable Auton", true);
+
   }
-   //overrides the main code for 2 seconds so you cant move for 2 seconds
+   //overrides the main code for 2 seconds so you cant move for 2 seconds 
 
+  // auton init
+  // we need to reset and start the timer for how long we want to drive
+  @Override
+  public void autonomousInit(){
+    autonTimer.reset();
+    autonTimer.start();
+  }
 
+  @Override
+  public void autonomousPeriodic(){
+    Boolean autonEnabled = SmartDashboard.getBoolean("Enable Auton", true);
+    if((true == autonEnabled) &&  (1.5>=autonTimer.get())){
+      m_robotDrive.tankDrive(1, 1);
+    }else{
+      m_robotDrive.tankDrive(0, 0);
+    }
+  }
   @Override
   public void teleopPeriodic() {
 
@@ -159,7 +171,7 @@ public class Robot extends TimedRobot {
       if ((m_operator.getRawAxis(3) >= 0) && (shootTime == 0L)) {
         shootTime=System.currentTimeMillis();
       }
-      //starts the actual procces of shooting the note
+      // starts the actual procces of shooting the note
       if ((m_operator.getRawAxis(3) >= 0) && (shootTime + 1500 <= System.currentTimeMillis())) {
         m_shooter_load.set(1.0);
         Timer.delay(0.5);
