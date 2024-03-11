@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
@@ -19,7 +22,12 @@ import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.LongSupplier;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;;;;
+
+
 
 
 /**
@@ -86,11 +94,29 @@ public class Robot extends TimedRobot {
   UsbCamera camera1;
   UsbCamera camera2;
  
+  private static final String kCustomAutoOne = "Auton One";
+  private static final String kCustomAutoTwo = "Auton Two";
+  private static final String kCustomAutoThree = "Auton Three";
+  private static final String kCustomAutoFour = "Auton Four";
+  private static final String kCustomAutoFive = "Auton Five";
+  private static final String kDefaultAuto = kCustomAutoOne;
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
   @Override
 
   public void robotInit() {
     SendableRegistry.addChild(m_robotDrive, m_leftFrontMotor);
     SendableRegistry.addChild(m_robotDrive, m_rightFrontMotor);
+
+    m_chooser.setDefaultOption(kDefaultAuto, kDefaultAuto);
+    m_chooser.addOption(kCustomAutoOne, kCustomAutoOne);
+    m_chooser.addOption(kCustomAutoTwo, kCustomAutoTwo);
+    m_chooser.addOption(kCustomAutoThree, kCustomAutoThree);
+    m_chooser.addOption(kCustomAutoFour, kCustomAutoFour);
+    m_chooser.addOption(kCustomAutoFive, kCustomAutoFive);
+    
+//    SmartDashboard.putData("Auto choices", m_chooser);
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -111,20 +137,34 @@ public class Robot extends TimedRobot {
 
     smoothDriving = 0;
 
-    camera1 = CameraServer.startAutomaticCapture(0);
-    camera2 = CameraServer.startAutomaticCapture(1);
-    camera1.setFPS(15);
-//    camera1.setVideoMode(PixelFormat.kMJPEG, 320, 240, 20);
-    camera2.setFPS(15);
+    m_autoSelected = m_chooser.getSelected();
+    System.out.println("Auto selected: " + m_autoSelected);
+    SmartDashboard.putData("Auton", m_chooser);
 
-//    server = CameraServer.getServer();
-//    CvSink cvSink = CameraServer.getVideo(0);
-//    CvSink cvSink2 = CameraServer.getVideo(1);
-//    CvSource cvSink3.putVideo("Blur1", 640, 480);
-//    CvSource cvSink4.putVideo("Blur2", 640, 480);
-//    CvSource outputStreamb = CameraServer.putVideo("Blur2", 640, 480);
 
-      SmartDashboard.putBoolean("Enable Auton", true);
+    // try to connect to camera 1
+    try {
+      //  Block of code to try
+//      camera1 = CameraServer.startAutomaticCapture(0);
+//      camera1.setFPS(15);
+    }
+    catch(Exception e) {
+      //  Block of code to handle errors
+      System.out.println("Camera-1: Not connected");
+    }
+
+    // try to connect to camera 2
+    try {
+      //  Block of code to try
+//      camera2 = CameraServer.startAutomaticCapture(1);
+//      camera2.setFPS(15);
+    }
+    catch(Exception e) {
+      //  Block of code to handle errors
+      System.out.println("Camera-2: Not connected");
+    }
+
+
 
   }
    //overrides the main code for 2 seconds so you cant move for 2 seconds 
@@ -135,17 +175,41 @@ public class Robot extends TimedRobot {
   public void autonomousInit(){
     autonTimer.reset();
     autonTimer.start();
+    m_autoSelected = m_chooser.getSelected();
+    System.out.println("Auto selected: " + m_autoSelected);
+
+    
   }
 
   @Override
   public void autonomousPeriodic(){
-    Boolean autonEnabled = SmartDashboard.getBoolean("Enable Auton", true);
-    if((true == autonEnabled) &&  (1.5>=autonTimer.get())){
-      m_robotDrive.tankDrive(1, 1);
-    }else{
-      m_robotDrive.tankDrive(0, 0);
+    switch(m_autoSelected) {
+      case kCustomAutoOne:
+        if (1.5 >= autonTimer.get()) {
+          m_robotDrive.tankDrive(1, 1);
+        } else {
+          m_robotDrive.tankDrive(0, 0);
+        }
+        break;
+      case kCustomAutoTwo:
+        // code block for Auton Two
+        break;
+      case kCustomAutoThree:
+        // code block for Auton Three
+        break;
+      case kCustomAutoFour:
+        // code block for Auton Four
+        break;
+      case kCustomAutoFive:
+        // code block for Auton Five
+        break;
+      default:
+        //System.out.println("Error: No Auton selected");
     }
+
   }
+
+
   @Override
   public void teleopPeriodic() {
 
