@@ -118,7 +118,6 @@ public class Robot extends TimedRobot {
     m_chooser.addOption(kCustomAutoFour, kCustomAutoFour);
     m_chooser.addOption(kCustomAutoFive, kCustomAutoFive);
     
-//    SmartDashboard.putData("Auto choices", m_chooser);
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -127,16 +126,19 @@ public class Robot extends TimedRobot {
     m_rightRearMotor.setInverted(true);
     m_shooter_load.setInverted(true);
 
+    // Set 1 climber inverted so they retract in same direction. This is not strictly needed as over spin retracts
     m_climber_left.setInverted(true);
 
     // Make the rears follow the fronts...
     m_leftRearMotor.follow((m_leftFrontMotor));
     m_rightRearMotor.follow((m_rightFrontMotor));
 
+    // Setup Drive and control systems
     m_robotDrive = new DifferentialDrive(m_leftFrontMotor::set, m_rightFrontMotor::set);
     m_driver = new Joystick(0);
     m_operator = new Joystick(1);
 
+    // This was an attempt for exponential drive. It is currently just used for 100% speed
     smoothDriving = 0;
 
     m_autoSelected = m_chooser.getSelected();
@@ -149,14 +151,16 @@ public class Robot extends TimedRobot {
       //  Block of code to try
       if (camera1.isConnected()) {
         camera1 = CameraServer.startAutomaticCapture(0);
-
-
-      }
-//      camera1.setFPS(15);
+        camera1.setFPS(15);
+      } else {
+        System.out.println("Camera-1: Not connected");
     }
+
+    }
+
     catch(Exception e) {
       //  Block of code to handle errors
-      System.out.println("Camera-1: Not connected");
+      System.out.println("Camera-1: Not connected " + e.getMessage());
     }
 
     // try to connect to camera 2
@@ -164,27 +168,35 @@ public class Robot extends TimedRobot {
       //  Block of code to try
       if (camera2.isConnected()) {
         camera2 = CameraServer.startAutomaticCapture(1);
-
-      }
-//      camera2 = CameraServer.startAutomaticCapture(1);
-//      camera2.setFPS(15);
+        camera2.setFPS(15);
+      } else {
+        System.out.println("Camera-2: Not connected");
     }
+
+    }
+
     catch(Exception e) {
       //  Block of code to handle errors
-      System.out.println("Camera-2: Not connected");
+      System.out.println("Camera-2: Not connected " + e.getMessage());
     }
 
 
 
   }
+
+
+
    //overrides the main code for 2 seconds so you cant move for 2 seconds 
 
   // auton init
   // we need to reset and start the timer for how long we want to drive
   @Override
   public void autonomousInit(){
+    // Reset autonTimer everytime autonomous mode is entered
     autonTimer.reset();
     autonTimer.start();
+
+    // read selected auton and show what was chosen
     m_autoSelected = m_chooser.getSelected();
     System.out.println("Auto selected: " + m_autoSelected);
 
@@ -193,6 +205,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic(){
+    
+    // Perform selected Auton
     switch(m_autoSelected) {
       case kCustomAutoDisabled:
         // Do nothing
@@ -260,9 +274,6 @@ public class Robot extends TimedRobot {
         shootTime = 0L;
       }
     
-      // Left bumper controls the loader
-//      var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
-//      m_shooter_load.set(loader_speed);
      // ----------------------------------------------------------------------------------------------------------------
      // End of baseline code
      // ----------------------------------------------------------------------------------------------------------------
@@ -320,9 +331,6 @@ public class Robot extends TimedRobot {
 
         if (shootTime + m_shooter_feemovement_triggerTime <= System.currentTimeMillis()){
           
-          // Activate Left bumper control of the loader
-          //var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
-          //m_shooter_load.set(loader_speed);
 
         }
 
@@ -385,13 +393,6 @@ public class Robot extends TimedRobot {
       }
 
 
-      //starts the actual procces of shooting the note
-      //if ((m_operator.getRawAxis(3) >= 0) && (shootTime + 1500 <= System.currentTimeMillis())) {
-      //  m_shooter_load.set(1.0);
-      //  Timer.delay(0.5);
-      //  m_shooter_feed.set(1.0);
-      //  Timer.delay(1.0);
-      //}
       // right trigger not pressed
       if ((m_operator.getRawAxis(3) == 0)) {
         shootTime = 0L;
@@ -418,10 +419,8 @@ public class Robot extends TimedRobot {
       // Make driver controller operate tank drive
       if (smoothDriving == 1) {
         m_robotDrive.tankDrive(-Math.pow(m_driver.getRawAxis(1),3),-Math.pow(m_driver.getRawAxis(5),3));
-//        System.out.println("Smoothing=1");
       } else {
         m_robotDrive.tankDrive(-m_driver.getRawAxis(1)*0.6,-m_driver.getRawAxis(5)*0.6);
-//        System.out.println("Smooting=0");
       }
       
 
@@ -456,9 +455,6 @@ public class Robot extends TimedRobot {
 
         if (shootTime + m_shooter_feemovement_triggerTime <= System.currentTimeMillis()){
           
-          // Activate Left bumper control of the loader
-          //var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
-          //m_shooter_load.set(loader_speed);
 
         }
 
@@ -521,13 +517,6 @@ public class Robot extends TimedRobot {
       }
 
 
-      //starts the actual procces of shooting the note
-      //if ((m_operator.getRawAxis(3) >= 0) && (shootTime + 1500 <= System.currentTimeMillis())) {
-      //  m_shooter_load.set(1.0);
-      //  Timer.delay(0.5);
-      //  m_shooter_feed.set(1.0);
-      //  Timer.delay(1.0);
-      //}
       // right trigger not pressed
       if ((m_operator.getRawAxis(3) == 0)) {
         shootTime = 0L;
