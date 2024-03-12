@@ -94,12 +94,13 @@ public class Robot extends TimedRobot {
   UsbCamera camera1;
   UsbCamera camera2;
  
+  private static final String kCustomAutoDisabled = "Auton Disabled";
   private static final String kCustomAutoOne = "Auton One";
   private static final String kCustomAutoTwo = "Auton Two";
   private static final String kCustomAutoThree = "Auton Three";
   private static final String kCustomAutoFour = "Auton Four";
   private static final String kCustomAutoFive = "Auton Five";
-  private static final String kDefaultAuto = kCustomAutoOne;
+  private static final String kDefaultAuto = kCustomAutoDisabled;
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -110,6 +111,7 @@ public class Robot extends TimedRobot {
     SendableRegistry.addChild(m_robotDrive, m_rightFrontMotor);
 
     m_chooser.setDefaultOption(kDefaultAuto, kDefaultAuto);
+    m_chooser.addOption(kCustomAutoDisabled, kCustomAutoDisabled);
     m_chooser.addOption(kCustomAutoOne, kCustomAutoOne);
     m_chooser.addOption(kCustomAutoTwo, kCustomAutoTwo);
     m_chooser.addOption(kCustomAutoThree, kCustomAutoThree);
@@ -145,7 +147,11 @@ public class Robot extends TimedRobot {
     // try to connect to camera 1
     try {
       //  Block of code to try
-//      camera1 = CameraServer.startAutomaticCapture(0);
+      if (camera1.isConnected()) {
+        camera1 = CameraServer.startAutomaticCapture(0);
+
+
+      }
 //      camera1.setFPS(15);
     }
     catch(Exception e) {
@@ -156,6 +162,10 @@ public class Robot extends TimedRobot {
     // try to connect to camera 2
     try {
       //  Block of code to try
+      if (camera2.isConnected()) {
+        camera2 = CameraServer.startAutomaticCapture(1);
+
+      }
 //      camera2 = CameraServer.startAutomaticCapture(1);
 //      camera2.setFPS(15);
     }
@@ -184,6 +194,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic(){
     switch(m_autoSelected) {
+      case kCustomAutoDisabled:
+        // Do nothing
+        break;
       case kCustomAutoOne:
         if (1.5 >= autonTimer.get()) {
           m_robotDrive.tankDrive(1, 1);
@@ -204,7 +217,7 @@ public class Robot extends TimedRobot {
         // code block for Auton Five
         break;
       default:
-        //System.out.println("Error: No Auton selected");
+        System.out.println("Warning: No Auton selected");
     }
 
   }
