@@ -25,9 +25,7 @@ import edu.wpi.first.cscore.VideoMode;
 import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;;;;
-
-
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;;
 
 
 /**
@@ -58,6 +56,12 @@ public class Robot extends TimedRobot {
   // Constants to set timing for the shooting operation, load will position note at the feed wheel, feed will move the note to the
   // shooting wheel that will already be up to speed, reset will zero out the shoot timer and return to normal operation
   // the other operations will only happen until the free movement time is reached
+
+edu.wpi.first.wpilibj.DigitalInput IntakeDown = new edu.wpi.first.wpilibj.DigitalInput(0);
+edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalInput(1);
+
+
+
   private final long m_shooter_load_triggerTime = 200;  // start the loader motor at this time on the trigger to position note to fire
   private final long m_shooter_feed_triggerTime = 850;  // start feed motor to shoot the note
   private final long m_shooter_feemovement_triggerTime = 350;  // start feed motor to shoot the note
@@ -145,8 +149,8 @@ public class Robot extends TimedRobot {
     // try to connect to camera 1
     try {
       //  Block of code to try
-//      camera1 = CameraServer.startAutomaticCapture(0);
-//      camera1.setFPS(15);
+      camera1 = CameraServer.startAutomaticCapture(0);
+      camera1.setFPS(15);
     }
     catch(Exception e) {
       //  Block of code to handle errors
@@ -156,8 +160,8 @@ public class Robot extends TimedRobot {
     // try to connect to camera 2
     try {
       //  Block of code to try
-//      camera2 = CameraServer.startAutomaticCapture(1);
-//      camera2.setFPS(15);
+      camera2 = CameraServer.startAutomaticCapture(1);
+      camera2.setFPS(15);
     }
     catch(Exception e) {
       //  Block of code to handle errors
@@ -193,6 +197,50 @@ public class Robot extends TimedRobot {
         break;
       case kCustomAutoTwo:
         // code block for Auton Two
+        ///////////////////////////////////  Start
+      // turning on the shooter wheel then shooter feed and shooter load in correct order at the correct time then turning it off
+      // if the button is not being pressed
+      if (shootTime == 0L) {
+        shootTime=System.currentTimeMillis();
+      }
+      // starts the actual procces of shooting the note
+      if ((shootTime + 1500 <= System.currentTimeMillis()) && (shootTime + 3000 <= System.currentTimeMillis())){
+        m_shooter_load.set(1.0);
+        Timer.delay(0.5);
+        m_shooter_feed.set(1.0);
+        Timer.delay(1.0);
+      }
+      
+      if (3.0 >= autonTimer.get() && autonTimer.get() <= 4.0){
+          if (!IntakeDown){
+            m_intake_lift.set(-0.35);
+          } else {
+            m_intake_lift.set(0);
+          }
+        }
+        
+      if (m_operator.getRawButton(3)) {
+        m_floor_intake.set(1);
+        m_shooter_load.set(1);
+      } else {
+        m_floor_intake.set(0.0);
+        if (shootTime == 0) {
+         m_shooter_load.set(0); 
+        }
+      }
+      
+      if (4.0 >= autonTimer.get() && autonTimer.get() <= 3.5) {
+          m_robotDrive.tankDrive(1, 1);
+        }
+
+      if (4.1 >= autonTimer.get() && autonTimer.get() <= 4.0){
+          m_robotDrive.tankDrive(-1.0, -1.0);
+          Timer.delay(0.2);
+          m_robotDrive.tankDrive(0, 0);
+        }
+
+        
+        ///////////////////////////////////  End
         break;
       case kCustomAutoThree:
         // code block for Auton Three
