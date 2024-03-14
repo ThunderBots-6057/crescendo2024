@@ -98,12 +98,13 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
   UsbCamera camera1;
   UsbCamera camera2;
  
+  private static final String kCustomAutoDisabled = "Auton Disabled";
   private static final String kCustomAutoOne = "Auton One";
   private static final String kCustomAutoTwo = "Auton Two";
   private static final String kCustomAutoThree = "Auton Three";
   private static final String kCustomAutoFour = "Auton Four";
   private static final String kCustomAutoFive = "Auton Five";
-  private static final String kDefaultAuto = kCustomAutoOne;
+  private static final String kDefaultAuto = kCustomAutoDisabled;
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -114,13 +115,13 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     SendableRegistry.addChild(m_robotDrive, m_rightFrontMotor);
 
     m_chooser.setDefaultOption(kDefaultAuto, kDefaultAuto);
+    m_chooser.addOption(kCustomAutoDisabled, kCustomAutoDisabled);
     m_chooser.addOption(kCustomAutoOne, kCustomAutoOne);
     m_chooser.addOption(kCustomAutoTwo, kCustomAutoTwo);
     m_chooser.addOption(kCustomAutoThree, kCustomAutoThree);
     m_chooser.addOption(kCustomAutoFour, kCustomAutoFour);
     m_chooser.addOption(kCustomAutoFive, kCustomAutoFive);
     
-//    SmartDashboard.putData("Auto choices", m_chooser);
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -129,16 +130,19 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     m_rightRearMotor.setInverted(true);
     m_shooter_load.setInverted(true);
 
+    // Set 1 climber inverted so they retract in same direction. This is not strictly needed as over spin retracts
     m_climber_left.setInverted(true);
 
     // Make the rears follow the fronts...
     m_leftRearMotor.follow((m_leftFrontMotor));
     m_rightRearMotor.follow((m_rightFrontMotor));
 
+    // Setup Drive and control systems
     m_robotDrive = new DifferentialDrive(m_leftFrontMotor::set, m_rightFrontMotor::set);
     m_driver = new Joystick(0);
     m_operator = new Joystick(1);
 
+    // This was an attempt for exponential drive. It is currently just used for 100% speed
     smoothDriving = 0;
 
     m_autoSelected = m_chooser.getSelected();
@@ -149,36 +153,54 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     // try to connect to camera 1
     try {
       //  Block of code to try
-      camera1 = CameraServer.startAutomaticCapture(0);
-      camera1.setFPS(15);
+      if (camera1.isConnected()) {
+        camera1 = CameraServer.startAutomaticCapture(0);
+        camera1.setFPS(15);
+      } else {
+        System.out.println("Camera-1: Not connected");
     }
+
+    }
+
     catch(Exception e) {
       //  Block of code to handle errors
-      System.out.println("Camera-1: Not connected");
+      System.out.println("Camera-1: Not connected " + e.getMessage());
     }
 
     // try to connect to camera 2
     try {
       //  Block of code to try
-      camera2 = CameraServer.startAutomaticCapture(1);
-      camera2.setFPS(15);
+      if (camera2.isConnected()) {
+        camera2 = CameraServer.startAutomaticCapture(1);
+        camera2.setFPS(15);
+      } else {
+        System.out.println("Camera-2: Not connected");
     }
+
+    }
+
     catch(Exception e) {
       //  Block of code to handle errors
-      System.out.println("Camera-2: Not connected");
+      System.out.println("Camera-2: Not connected " + e.getMessage());
     }
 
 
 
   }
+
+
+
    //overrides the main code for 2 seconds so you cant move for 2 seconds 
 
   // auton init
   // we need to reset and start the timer for how long we want to drive
   @Override
   public void autonomousInit(){
+    // Reset autonTimer everytime autonomous mode is entered
     autonTimer.reset();
     autonTimer.start();
+
+    // read selected auton and show what was chosen
     m_autoSelected = m_chooser.getSelected();
     System.out.println("Auto selected: " + m_autoSelected);
 
@@ -187,7 +209,12 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 
   @Override
   public void autonomousPeriodic(){
+    
+    // Perform selected Auton
     switch(m_autoSelected) {
+      case kCustomAutoDisabled:
+        // Do nothing
+        break;
       case kCustomAutoOne:
         if (1.5 >= autonTimer.get()) {
           m_robotDrive.tankDrive(1, 1);
@@ -252,7 +279,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         // code block for Auton Five
         break;
       default:
-        //System.out.println("Error: No Auton selected");
+        System.out.println("Warning: No Auton selected");
     }
 
   }
@@ -295,9 +322,6 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         shootTime = 0L;
       }
     
-      // Left bumper controls the loader
-//      var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
-//      m_shooter_load.set(loader_speed);
      // ----------------------------------------------------------------------------------------------------------------
      // End of baseline code
      // ----------------------------------------------------------------------------------------------------------------
@@ -355,9 +379,6 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 
         if (shootTime + m_shooter_feemovement_triggerTime <= System.currentTimeMillis()){
           
-          // Activate Left bumper control of the loader
-          //var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
-          //m_shooter_load.set(loader_speed);
 
         }
 
@@ -420,13 +441,6 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       }
 
 
-      //starts the actual procces of shooting the note
-      //if ((m_operator.getRawAxis(3) >= 0) && (shootTime + 1500 <= System.currentTimeMillis())) {
-      //  m_shooter_load.set(1.0);
-      //  Timer.delay(0.5);
-      //  m_shooter_feed.set(1.0);
-      //  Timer.delay(1.0);
-      //}
       // right trigger not pressed
       if ((m_operator.getRawAxis(3) == 0)) {
         shootTime = 0L;
@@ -453,10 +467,8 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       // Make driver controller operate tank drive
       if (smoothDriving == 1) {
         m_robotDrive.tankDrive(-Math.pow(m_driver.getRawAxis(1),3),-Math.pow(m_driver.getRawAxis(5),3));
-//        System.out.println("Smoothing=1");
       } else {
         m_robotDrive.tankDrive(-m_driver.getRawAxis(1)*0.6,-m_driver.getRawAxis(5)*0.6);
-//        System.out.println("Smooting=0");
       }
       
 
@@ -491,9 +503,6 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 
         if (shootTime + m_shooter_feemovement_triggerTime <= System.currentTimeMillis()){
           
-          // Activate Left bumper control of the loader
-          //var loader_speed = m_operator.getRawButton(5) ? 1.0 : 0.0;
-          //m_shooter_load.set(loader_speed);
 
         }
 
@@ -556,13 +565,6 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       }
 
 
-      //starts the actual procces of shooting the note
-      //if ((m_operator.getRawAxis(3) >= 0) && (shootTime + 1500 <= System.currentTimeMillis())) {
-      //  m_shooter_load.set(1.0);
-      //  Timer.delay(0.5);
-      //  m_shooter_feed.set(1.0);
-      //  Timer.delay(1.0);
-      //}
       // right trigger not pressed
       if ((m_operator.getRawAxis(3) == 0)) {
         shootTime = 0L;
