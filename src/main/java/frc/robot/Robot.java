@@ -222,48 +222,70 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       case kCustomAutoTwo:
         // code block for Auton Two
         ///////////////////////////////////  Start
-      // turning on the shooter wheel then shooter feed and shooter load in correct order at the correct time then turning it off
-      // if the button is not being pressed
-      if (shootTime == 0L) {
-        shootTime=System.currentTimeMillis();
-      }
-      // starts the actual procces of shooting the note
-      if ((shootTime + 1500 <= System.currentTimeMillis()) && (shootTime + 3000 <= System.currentTimeMillis())){
+      
+      // shoots the note
+      if (1.5 >= autonTimer.get()){
+        m_shooter_wheel.set(1.1);
         m_shooter_load.set(1.0);
-        Timer.delay(0.5);
-        m_shooter_feed.set(1.0);
-        Timer.delay(1.0);
+        if (1.0 >= autonTimer.get()){
+          m_shooter_feed.set(1.0);
+        }
       }
       
-      if (3.0 >= autonTimer.get() && autonTimer.get() <= 4.0){
-          if (!IntakeDown){
+      // set down the intake and start the intake forward
+      if (2.5 <= autonTimer.get() && autonTimer.get() <= 3.5) {
+          if (!IntakeDown.get()){
             m_intake_lift.set(-0.35);
           } else {
             m_intake_lift.set(0);
+            m_floor_intake.set(1);
+            m_shooter_load.set(1);
           }
         }
         
-      if (m_operator.getRawButton(3)) {
-        m_floor_intake.set(1);
-        m_shooter_load.set(1);
-      } else {
-        m_floor_intake.set(0.0);
-        if (shootTime == 0) {
-         m_shooter_load.set(0); 
-        }
-      }
-      
-      if (4.0 >= autonTimer.get() && autonTimer.get() <= 3.5) {
+      // drive to pickup note
+      if (3.5 <= autonTimer.get() && autonTimer.get() <= 4.0) {
           m_robotDrive.tankDrive(1, 1);
         }
 
-      if (4.1 >= autonTimer.get() && autonTimer.get() <= 4.0){
+      // stop right away
+      if (4.0 <= autonTimer.get() && autonTimer.get() <= 4.2){
           m_robotDrive.tankDrive(-1.0, -1.0);
-          Timer.delay(0.2);
+        }
+
+      // Don't move
+      if (4.3 <= autonTimer.get() && autonTimer.get() <= 4.5){
           m_robotDrive.tankDrive(0, 0);
         }
 
+      // lift up the intake and stop the intake
+      if (4.5 <= autonTimer.get() && autonTimer.get() <= 5.5) {
+          if (!IntakeUp.get()){
+            m_intake_lift.set(0.35);
+          } else {
+            m_intake_lift.set(0);
+            m_floor_intake.set(0);
+            m_shooter_load.set(0);
+          }
+        }
         
+      // go back to start
+      if (5.5 <= autonTimer.get() && autonTimer.get() <= 6.5){
+          m_robotDrive.tankDrive(-1.0, -1.0);
+          m_robotDrive.stopMotor();
+        }
+
+      // shoots the note
+      if (6.5 <= autonTimer.get() && autonTimer.get() <= 8.0){
+        m_shooter_wheel.set(1.1);
+        m_shooter_load.set(1.0);
+        if (7.5 >= autonTimer.get()){
+          m_shooter_feed.set(1.0);
+        }
+      }
+      
+
+
         ///////////////////////////////////  End
         break;
       case kCustomAutoThree:
