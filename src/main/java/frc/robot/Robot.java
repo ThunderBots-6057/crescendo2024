@@ -21,6 +21,7 @@ import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
@@ -149,12 +150,10 @@ public class Robot extends TimedRobot {
     // try to connect to camera 1
     try {
       //  Block of code to try
-      if (camera1.isConnected()) {
-        camera1 = CameraServer.startAutomaticCapture(0);
-        camera1.setFPS(15);
-      } else {
-        System.out.println("Camera-1: Not connected");
-    }
+      // System.out.println(CameraServer.startAutomaticCapture(0).isConnected());
+      camera1 = CameraServer.startAutomaticCapture(0);
+      camera1.setVideoMode(PixelFormat.kMJPEG,320,240,20);
+      
 
     }
 
@@ -166,14 +165,12 @@ public class Robot extends TimedRobot {
     // try to connect to camera 2
     try {
       //  Block of code to try
-      if (camera2.isConnected()) {
-        camera2 = CameraServer.startAutomaticCapture(1);
-        camera2.setFPS(15);
-      } else {
-        System.out.println("Camera-2: Not connected");
+      // System.out.println(CameraServer.startAutomaticCapture(0));
+      camera1 = CameraServer.startAutomaticCapture(0);
+      camera1.setFPS(15);
     }
 
-    }
+    
 
     catch(Exception e) {
       //  Block of code to handle errors
