@@ -26,6 +26,7 @@ import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;;
 
 
@@ -109,6 +110,8 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  private Boolean nuetralDriveMode = true;
+
   @Override
 
   public void robotInit() {
@@ -123,6 +126,12 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     m_chooser.addOption(kCustomAutoFour, kCustomAutoFour);
     m_chooser.addOption(kCustomAutoFive, kCustomAutoFive);
     
+    SmartDashboard.putBoolean("Driving Neutral Mode", true);
+    m_leftFrontMotor.setNeutralMode(NeutralMode.Brake);
+    m_leftRearMotor.setNeutralMode(NeutralMode.Brake);
+    m_rightFrontMotor.setNeutralMode(NeutralMode.Brake);
+    m_rightRearMotor.setNeutralMode(NeutralMode.Brake);
+
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -150,11 +159,12 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     System.out.println("Auto selected: " + m_autoSelected);
     SmartDashboard.putData("Auton", m_chooser);
 
-
+/*
     // try to connect to camera 1
     try {
       //  Block of code to try
-      // System.out.println(CameraServer.startAutomaticCapture(0).isConnected());
+    
+      System.out.println(CameraServer.startAutomaticCapture(0));
       camera1 = CameraServer.startAutomaticCapture(0);
       camera1.setVideoMode(PixelFormat.kMJPEG,320,240,20);
       
@@ -169,7 +179,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     // try to connect to camera 2
     try {
       //  Block of code to try
-      // System.out.println(CameraServer.startAutomaticCapture(0));
+      System.out.println(CameraServer.startAutomaticCapture(0));
       camera1 = CameraServer.startAutomaticCapture(0);
       camera1.setFPS(15);
     }
@@ -181,7 +191,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       System.out.println("Camera-2: Not connected " + e.getMessage());
     }
 
-
+*/
 
   }
 
@@ -274,6 +284,11 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
           m_robotDrive.tankDrive(-1.0, -1.0);
           m_robotDrive.stopMotor();
         }
+
+      
+
+
+
 
       // shoots the note
       if (6.5 <= autonTimer.get() && autonTimer.get() <= 8.0){
@@ -494,6 +509,26 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     // Set button 1 to extend on both climbers at the right multiplier
 
       SmartDashboard.putNumber("smoothDriving", smoothDriving);
+
+      // Turn on or off brake mode
+      if (m_driver.getRawButtonReleased(5)){
+        if(nuetralDriveMode){
+          nuetralDriveMode = !nuetralDriveMode;
+          m_leftFrontMotor.setNeutralMode(NeutralMode.Coast);
+          m_leftRearMotor.setNeutralMode(NeutralMode.Coast);
+          m_rightFrontMotor.setNeutralMode(NeutralMode.Coast);
+          m_rightRearMotor.setNeutralMode(NeutralMode.Coast);
+          SmartDashboard.putBoolean("Driving Neutral Mode", false);
+        } else {
+          nuetralDriveMode = !nuetralDriveMode;
+          m_leftFrontMotor.setNeutralMode(NeutralMode.Brake);
+          m_leftRearMotor.setNeutralMode(NeutralMode.Brake);
+          m_rightFrontMotor.setNeutralMode(NeutralMode.Brake);
+          m_rightRearMotor.setNeutralMode(NeutralMode.Brake);
+          SmartDashboard.putBoolean("Driving Neutral Mode", true);
+        }
+      
+      }
 
       // turning on the shooter wheel then shooter feed and shooter load in correct order at the correct time then turning it off
 
