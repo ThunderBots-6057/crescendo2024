@@ -129,6 +129,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     m_rightFrontMotor.setInverted(true);
     m_rightRearMotor.setInverted(true);
     m_shooter_load.setInverted(true);
+    m_floor_intake.setInverted(true);
 
     // Set 1 climber inverted so they retract in same direction. This is not strictly needed as over spin retracts
     m_climber_left.setInverted(true);
@@ -153,7 +154,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     // try to connect to camera 1
     try {
       //  Block of code to try
-      if (camera1.isConnected()) {
+      if (true) {
         camera1 = CameraServer.startAutomaticCapture(0);
         camera1.setFPS(15);
       } else {
@@ -170,7 +171,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     // try to connect to camera 2
     try {
       //  Block of code to try
-      if (camera2.isConnected()) {
+      if (true) {
         camera2 = CameraServer.startAutomaticCapture(1);
         camera2.setFPS(15);
       } else {
@@ -238,13 +239,13 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         Timer.delay(1.0);
       }
       
-      if (3.0 >= autonTimer.get() && autonTimer.get() <= 4.0){
-          if (!IntakeDown){
-            m_intake_lift.set(-0.35);
-          } else {
-            m_intake_lift.set(0);
-          }
-        }
+//      if (3.0 >= autonTimer.get() && autonTimer.get() <= 4.0){
+//          if (!IntakeDown){
+//            m_intake_lift.set(-0.35);
+//          } else {
+//            m_intake_lift.set(0);
+//          }
+//        }
         
       if (m_operator.getRawButton(3)) {
         m_floor_intake.set(1);
@@ -535,10 +536,17 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       }
 
     // this is to move the intake up and down to load it into the launcher
+    //EDITED TO MOVE TO LIMIT SWITCH WHILE BEING HELD DOWN
       if ((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135)) {
-        m_intake_lift.set(0.35);
-      } else if ((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45)) {
-        m_intake_lift.set(-0.35);
+        //LOWER INTAKE ONLY IF LIMIT SWITCH IS NOT CLICKED (NORMALLY CLOSED)
+        if (!IntakeDown.get()) {
+          m_intake_lift.set(0.5);
+        }
+      } else if ((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45) && !IntakeDown.get()) {
+        //RAISE INTAKE ONLY IF LIMIT SWITCH IS NOT CLICKED (NORMALLY CLOSED)
+        if (!IntakeUp.get()) {
+          m_intake_lift.set(-0.5);
+        }
       } else {
         m_intake_lift.set(0);
       } 
