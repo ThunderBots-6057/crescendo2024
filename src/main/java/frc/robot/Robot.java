@@ -110,7 +110,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private Boolean nuetralDriveMode = true;
+  private Boolean nuetralDriveMode = false;
 
   @Override
 
@@ -159,12 +159,12 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     System.out.println("Auto selected: " + m_autoSelected);
     SmartDashboard.putData("Auton", m_chooser);
 
-/*
-    // try to connect to camera 1
+// /*
+// try to connect to camera 1
     try {
       //  Block of code to try
     
-      System.out.println(CameraServer.startAutomaticCapture(0));
+      //System.out.println(CameraServer.startAutomaticCapture(0));
       camera1 = CameraServer.startAutomaticCapture(0);
       camera1.setVideoMode(PixelFormat.kMJPEG,320,240,20);
       
@@ -179,9 +179,9 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     // try to connect to camera 2
     try {
       //  Block of code to try
-      System.out.println(CameraServer.startAutomaticCapture(0));
-      camera1 = CameraServer.startAutomaticCapture(0);
-      camera1.setFPS(15);
+      //System.out.println(CameraServer.startAutomaticCapture(0));
+      camera2 = CameraServer.startAutomaticCapture(1);
+      camera2.setVideoMode(PixelFormat.kMJPEG,320,240,20);
     }
 
     
@@ -191,7 +191,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       System.out.println("Camera-2: Not connected " + e.getMessage());
     }
 
-*/
+// */
 
   }
 
