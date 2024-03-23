@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
 
   // Smooth driving 0 = off 1 = on
   int smoothDriving = 0;
-//  int smoothDriving = 1;
+  //  int smoothDriving = 1;
 
 
   // Constants to set timing for the shooting operation, load will position note at the feed wheel, feed will move the note to the
@@ -94,9 +94,6 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
   // This timer is used for the drive straight auton.
   final Timer autonTimer = new Timer();
 
-  // private final WPI_VictorSPX m_intake_drive = new WPI_VictorSPX(9);
-  // private final WPI_VictorSPX m_intake_fold = new WPI_VictorSPX(10);
-  // private final WPI_VictorSPX m_leftRearMotor = new WPI_VictorSPX(1); we dont know the number
   UsbCamera camera1;
   UsbCamera camera2;
  
@@ -106,7 +103,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
   private static final String kCustomAutoThree = "Auton Three";
   private static final String kCustomAutoFour = "Auton Four";
   private static final String kCustomAutoFive = "Auton Five";
-  private static final String kDefaultAuto = kCustomAutoDisabled;
+  private static final String kDefaultAuto = kCustomAutoOne;
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -164,10 +161,8 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     try {
       //  Block of code to try
     
-      //System.out.println(CameraServer.startAutomaticCapture(0));
       camera1 = CameraServer.startAutomaticCapture(0);
       camera1.setVideoMode(PixelFormat.kMJPEG,320,240,20);
-      
 
     }
 
@@ -179,7 +174,6 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     // try to connect to camera 2
     try {
       //  Block of code to try
-      //System.out.println(CameraServer.startAutomaticCapture(0));
       camera2 = CameraServer.startAutomaticCapture(1);
       camera2.setVideoMode(PixelFormat.kMJPEG,320,240,20);
     }
@@ -191,16 +185,15 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       System.out.println("Camera-2: Not connected " + e.getMessage());
     }
 
-// */
-
   }
 
 
 
-   //overrides the main code for 2 seconds so you cant move for 2 seconds 
+  //overrides the main code for 2 seconds so you cant move for 2 seconds 
 
   // auton init
   // we need to reset and start the timer for how long we want to drive
+
   @Override
   public void autonomousInit(){
     // Reset autonTimer everytime autonomous mode is entered
@@ -589,15 +582,18 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       }
 
     // this is to move the intake up and down to load it into the launcher
-      if ((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135)) {
-        m_intake_lift.set(0.35);
-      } else if ((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45)) {
-        m_intake_lift.set(-0.35);
+      if (((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135)) && (!IntakeDown.get())) {
+        m_intake_lift.set(0.10);
+        //System.out.println("Intake down set");
+      } else if (((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45)) && (!IntakeUp.get())) {
+        m_intake_lift.set(-0.25); //up
+        //System.out.println("Intake up set");
       } else {
         m_intake_lift.set(0);
       } 
 
-
+      SmartDashboard.putBoolean("IntakeDown", IntakeDown.get());
+      SmartDashboard.putBoolean("IntakeUp", IntakeUp.get());
       // this is to pick it up from the ground
       if (m_operator.getRawButton(3)) {
         m_floor_intake.set(1);
