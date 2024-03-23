@@ -74,6 +74,8 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
   private final double m_climber_left_multiplier = 0.8;
   private final double m_climber_right_multiplier = 1.0;
 
+  private double intakeDirection = 0;
+
   private final WPI_VictorSPX m_leftFrontMotor = new WPI_VictorSPX(4);
   private final WPI_VictorSPX m_rightFrontMotor = new WPI_VictorSPX(5);
   private final WPI_VictorSPX m_leftRearMotor = new WPI_VictorSPX(51);
@@ -216,6 +218,11 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         // Do nothing
         break;
       case kCustomAutoOne:
+        if(!IntakeUp.get()) {
+        m_intake_lift.set(-0.25); //up
+        }
+
+
         if (1.5 >= autonTimer.get()) {
           m_robotDrive.tankDrive(1, 1);
         } else {
@@ -583,14 +590,33 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 
     // this is to move the intake up and down to load it into the launcher
       if (((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135)) && (!IntakeDown.get())) {
-        m_intake_lift.set(0.10);
+        //m_intake_lift.set(0.10);
+        intakeDirection = 1;
         //System.out.println("Intake down set");
       } else if (((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45)) && (!IntakeUp.get())) {
-        m_intake_lift.set(-0.25); //up
+        //m_intake_lift.set(-0.25); //up
         //System.out.println("Intake up set");
-      } else {
-        m_intake_lift.set(0);
+        intakeDirection = -1;
+      } else if (IntakeDown.get() || IntakeUp.get()){
+        //m_intake_lift.set(0);
+        intakeDirection = 0;
       } 
+
+
+      if (intakeDirection == 0) {
+        // no move
+        m_intake_lift.set(0); 
+      }
+
+      if (intakeDirection == -1) {
+        // no move
+        m_intake_lift.set(-0.25); //up
+      }
+
+      if (intakeDirection == 1) {
+        // no move
+        m_intake_lift.set(0.10);
+      }
 
       SmartDashboard.putBoolean("IntakeDown", IntakeDown.get());
       SmartDashboard.putBoolean("IntakeUp", IntakeUp.get());
@@ -604,6 +630,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
          m_shooter_load.set(0); 
         }
       }
+      System.out.println(intakeDirection);
       if (m_operator.getRawButton(4)) {
         m_floor_intake.set(-1);
         m_shooter_load.set(-1);
