@@ -33,6 +33,24 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;;
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
  * the code necessary to operate a robot with tank drive.
+ * adaptations made and used for the 2024 "Crecendo" competition in Belleville and Livonia
+ * At the end there was these capabilities:
+ * Driving: fast and slow modes, also options for brake and coast drive
+ * Climbing: on chain (stage) with dual climbers
+ * Intake-lift: up until limit switch hit and reposition on limit switch if bounces off, driver can stop intake
+ *   part way for scoring in Amp
+ * Intake: in and out, driver can eject at 50% speed for scoring in Amp
+ * Shoot: shooting wheel runs for approx 1 second, then intake, load and feed activate at same time.
+ * Autons:
+ *   Disabled: does nothing
+ *   Auton one: not renamed from default. will cross the line
+ *   Auton two: will wait 5 seconds and then cross the line
+ * 
+ * Robot simulation environment saved on github as it's own repository
+ * 
+ * Intention of baseline, competition and experimental code sections was to quikly change between different but working code
+ *   on the fly. This feature was never used and only continued development on "experimental" after very early code point was
+ *   saved to baseline
  */
 
 public class Robot extends TimedRobot {
@@ -50,19 +68,20 @@ public class Robot extends TimedRobot {
   String runCode = "experimental";
 
 
+  // Smooth driving became fast mode driving. there was no appearent advantage to exponetial drive acceleration
   // Smooth driving 0 = off 1 = on
   int smoothDriving = 0;
   //  int smoothDriving = 1;
+
+// These are for accessing the limit switches on the intake lift. 
+edu.wpi.first.wpilibj.DigitalInput IntakeDown = new edu.wpi.first.wpilibj.DigitalInput(0);
+edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalInput(1);
+
 
 
   // Constants to set timing for the shooting operation, load will position note at the feed wheel, feed will move the note to the
   // shooting wheel that will already be up to speed, reset will zero out the shoot timer and return to normal operation
   // the other operations will only happen until the free movement time is reached
-
-edu.wpi.first.wpilibj.DigitalInput IntakeDown = new edu.wpi.first.wpilibj.DigitalInput(0);
-edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalInput(1);
-
-
 
   private final long m_shooter_load_triggerTime = 200;  // start the loader motor at this time on the trigger to position note to fire
   private final long m_shooter_feed_triggerTime = 850;  // start feed motor to shoot the note
