@@ -111,7 +111,9 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 
   private Boolean nuetralDriveMode = false;
 
-  private static final boolean camerasConnected = false;
+  // Comment unused state and uncomment used state: if only running on the robot then cameras attached, if simulated no cameras attached
+//  private static final boolean camerasConnected = false;
+  private static final boolean camerasConnected = true;
 
   @Override
 
