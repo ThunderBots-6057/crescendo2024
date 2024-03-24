@@ -652,6 +652,14 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         }
       }
 
+      if (m_driver.getRawButton(1)) {
+        m_floor_intake.set(-0.5);
+      }
+
+      if (m_driver.getRawButtonReleased(1)) {
+        m_floor_intake.set(0);
+      }
+
 
       // right trigger not pressed
       if ((m_operator.getRawAxis(3) == 0)) {
