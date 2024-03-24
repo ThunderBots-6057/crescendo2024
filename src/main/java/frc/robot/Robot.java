@@ -114,6 +114,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
   // Comment unused state and uncomment used state: if only running on the robot then cameras attached, if simulated no cameras attached
 //  private static final boolean camerasConnected = false;
   private static final boolean camerasConnected = true;
+  private static final int autonDelay = 5;
 
   @Override
 
@@ -128,6 +129,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
     m_chooser.addOption(kCustomAutoThree, kCustomAutoThree);
     m_chooser.addOption(kCustomAutoFour, kCustomAutoFour);
     m_chooser.addOption(kCustomAutoFive, kCustomAutoFive);
+    
     
     SmartDashboard.putBoolean("Driving Neutral Mode", true);
     m_leftFrontMotor.setNeutralMode(NeutralMode.Brake);
@@ -240,73 +242,13 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         // code block for Auton Two
         ///////////////////////////////////  Start
       
-      // shoots the note
-      if (1.5 >= autonTimer.get()){
-        m_shooter_wheel.set(1.1);
-        m_shooter_load.set(1.0);
-        if (1.0 >= autonTimer.get()){
-          m_shooter_feed.set(1.0);
-        }
-      }
-      
-      // set down the intake and start the intake forward
-      if (2.5 <= autonTimer.get() && autonTimer.get() <= 3.5) {
-          if (!IntakeDown.get()){
-            m_intake_lift.set(-0.35);
-          } else {
-            m_intake_lift.set(0);
-            m_floor_intake.set(1);
-            m_shooter_load.set(1);
-          }
-        }
         
-      // drive to pickup note
-      if (3.5 <= autonTimer.get() && autonTimer.get() <= 4.0) {
+
+        if (((1.5 + autonDelay) >= autonTimer.get()) && (autonTimer.get() >= autonDelay)) {
           m_robotDrive.tankDrive(1, 1);
-        }
-
-      // stop right away
-      if (4.0 <= autonTimer.get() && autonTimer.get() <= 4.2){
-          m_robotDrive.tankDrive(-1.0, -1.0);
-        }
-
-      // Don't move
-      if (4.3 <= autonTimer.get() && autonTimer.get() <= 4.5){
+        } else {
           m_robotDrive.tankDrive(0, 0);
         }
-
-      // lift up the intake and stop the intake
-      if (4.5 <= autonTimer.get() && autonTimer.get() <= 5.5) {
-          if (!IntakeUp.get()){
-            m_intake_lift.set(0.35);
-          } else {
-            m_intake_lift.set(0);
-            m_floor_intake.set(0);
-            m_shooter_load.set(0);
-          }
-        }
-        
-      // go back to start
-      if (5.5 <= autonTimer.get() && autonTimer.get() <= 6.5){
-          m_robotDrive.tankDrive(-1.0, -1.0);
-          m_robotDrive.stopMotor();
-        }
-
-      
-
-
-
-
-      // shoots the note
-      if (6.5 <= autonTimer.get() && autonTimer.get() <= 8.0){
-        m_shooter_wheel.set(1.1);
-        m_shooter_load.set(1.0);
-        if (7.5 >= autonTimer.get()){
-          m_shooter_feed.set(1.0);
-        }
-      }
-      
-
 
         ///////////////////////////////////  End
         break;
@@ -653,7 +595,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       }
 
       if (m_driver.getRawButton(1)) {
-        m_floor_intake.set(-0.5);
+        m_floor_intake.set(0.5);
       }
 
       if (m_driver.getRawButtonReleased(1)) {
