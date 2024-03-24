@@ -111,6 +111,8 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 
   private Boolean nuetralDriveMode = false;
 
+  private static final boolean camerasConnected = false;
+
   @Override
 
   public void robotInit() {
@@ -162,9 +164,10 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 // try to connect to camera 1
     try {
       //  Block of code to try
-    
-      camera1 = CameraServer.startAutomaticCapture(0);
-      camera1.setVideoMode(PixelFormat.kMJPEG,320,240,20);
+      if(camerasConnected) {
+        camera1 = CameraServer.startAutomaticCapture(0);
+        camera1.setVideoMode(PixelFormat.kMJPEG,320,240,20);
+      }
 
     }
 
@@ -175,9 +178,11 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
 
     // try to connect to camera 2
     try {
+      if (camerasConnected){
       //  Block of code to try
-      camera2 = CameraServer.startAutomaticCapture(1);
-      camera2.setVideoMode(PixelFormat.kMJPEG,320,240,20);
+        camera2 = CameraServer.startAutomaticCapture(1);
+        camera2.setVideoMode(PixelFormat.kMJPEG,320,240,20);
+      }
     }
 
     
@@ -589,15 +594,15 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
       }
 
     // this is to move the intake up and down to load it into the launcher
-      if (((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135)) && (!IntakeDown.get())) {
+      if (((m_operator.getPOV(0) == 225) || (m_operator.getPOV(0) == 180) || (m_operator.getPOV(0) == 135))) {
         //m_intake_lift.set(0.10);
         intakeDirection = 1;
         //System.out.println("Intake down set");
-      } else if (((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45)) && (!IntakeUp.get())) {
+      } else if (((m_operator.getPOV(0) == 315) || (m_operator.getPOV(0) == 0) || (m_operator.getPOV(0) == 45))) {
         //m_intake_lift.set(-0.25); //up
         //System.out.println("Intake up set");
         intakeDirection = -1;
-      } else if (IntakeDown.get() || IntakeUp.get() || m_driver.getRawButtonReleased(2)){
+      } else if (m_driver.getRawButtonReleased(2)){
         //m_intake_lift.set(0);
         intakeDirection = 0;
       } 
@@ -608,14 +613,18 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         m_intake_lift.set(0); 
       }
 
-      if (intakeDirection == -1) {
-        // no move
+      if ((intakeDirection == -1 ) && !(IntakeUp.get())) {
+        // move up
         m_intake_lift.set(-0.25); //up
+      } else if (intakeDirection == -1) {
+        m_intake_lift.set(0); 
       }
 
-      if (intakeDirection == 1) {
-        // no move
+      if ((intakeDirection == 1)  && !(IntakeDown.get())) {
+        // move down
         m_intake_lift.set(0.10);
+      } else if (intakeDirection == 1) {
+        m_intake_lift.set(0);
       }
 
       SmartDashboard.putBoolean("IntakeDown", IntakeDown.get());
@@ -630,7 +639,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
          m_shooter_load.set(0); 
         }
       }
-      System.out.println(intakeDirection);
+      //System.out.println(intakeDirection);
       if (m_operator.getRawButton(4)) {
         m_floor_intake.set(-1);
         m_shooter_load.set(-1);

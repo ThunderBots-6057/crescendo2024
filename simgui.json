@@ -1,10 +1,28 @@
 {
   "HALProvider": {
+    "DIO": {
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
       "Victor SPX[4]": {
         "header": {
           "open": true
         }
+      },
+      "Victor SPX[9]": {
+        "header": {
+          "open": true
+        }
+      }
+    },
+    "RoboRIO": {
+      "RoboRIO Input": {
+        "open": true
+      },
+      "window": {
+        "visible": true
       }
     }
   },
@@ -13,9 +31,47 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto choices": "String Chooser",
       "/SmartDashboard/Auton": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/Auton": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
+      "LiveWindow": {
+        "open": true
+      },
+      "Shuffleboard": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "Auton": {
+          "open": true,
+          "string[]##v_/SmartDashboard/Auton/options": {
+            "open": true
+          }
+        },
+        "open": true
+      }
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
   }
 }
