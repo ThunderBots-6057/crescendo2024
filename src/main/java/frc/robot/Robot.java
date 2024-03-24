@@ -597,7 +597,7 @@ edu.wpi.first.wpilibj.DigitalInput IntakeUp = new edu.wpi.first.wpilibj.DigitalI
         //m_intake_lift.set(-0.25); //up
         //System.out.println("Intake up set");
         intakeDirection = -1;
-      } else if (IntakeDown.get() || IntakeUp.get()){
+      } else if (IntakeDown.get() || IntakeUp.get() || m_driver.getRawButtonReleased(2)){
         //m_intake_lift.set(0);
         intakeDirection = 0;
       } 
