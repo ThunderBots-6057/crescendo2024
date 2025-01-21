@@ -11,6 +11,11 @@
           "open": true
         }
       },
+      "Victor SPX[5]": {
+        "header": {
+          "open": true
+        }
+      },
       "Victor SPX[9]": {
         "header": {
           "open": true
@@ -31,13 +36,6 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto choices": "String Chooser",
       "/SmartDashboard/Auton": "String Chooser"
-    },
-    "windows": {
-      "/SmartDashboard/Auton": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables": {
